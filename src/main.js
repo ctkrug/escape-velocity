@@ -6,11 +6,20 @@ import { createAudioEngine } from "./audio.js";
 import { getOrbitCount, incrementOrbitCount } from "./stats.js";
 
 const PLANET_RADIUS = 40;
-const ESCAPE_RADIUS = 900;
+// The satellite launches from a small standoff above the surface, not the
+// surface itself: a tangential orbit starting exactly at PLANET_RADIUS has
+// periapsis <= PLANET_RADIUS by construction (see classifyOutcome), which
+// makes a genuine "orbit" classification unreachable. The standoff gives a
+// real periapsis clearance margin.
+const LAUNCH_RADIUS = 60;
+const ESCAPE_RADIUS = 500;
 const MAX_DRAG_DISTANCE = 220;
 const DRAG_SENSITIVITY = 0.09;
 const SIM_DT = 1 / 120;
 const MAX_FRAME_DT = 0.05;
+// Simulated seconds per real second — keeps orbit-lock (2 full periods) and
+// escape resolution feeling snappy without touching the physics itself.
+const TIME_SCALE = 3;
 const MAX_TRACE_POINTS = 4000;
 const DRAG_SOUND_THROTTLE_MS = 90;
 
@@ -61,11 +70,11 @@ let lastDragSoundTime = 0;
 let shakeTimeoutId = null;
 
 function anchorPoint() {
-  return { x: PLANET_RADIUS, y: 0 };
+  return { x: LAUNCH_RADIUS, y: 0 };
 }
 
 function restingSatellite() {
-  return { x: PLANET_RADIUS, y: 0, vx: 0, vy: 0 };
+  return { x: LAUNCH_RADIUS, y: 0, vx: 0, vy: 0 };
 }
 
 function resize() {
@@ -134,7 +143,7 @@ function endDrag() {
 }
 
 function launchSatellite(velocity) {
-  satellite = { x: PLANET_RADIUS, y: 0, vx: velocity.vx, vy: velocity.vy };
+  satellite = { x: LAUNCH_RADIUS, y: 0, vx: velocity.vx, vy: velocity.vy };
   launchSpeed = Math.hypot(velocity.vx, velocity.vy);
   trace = [{ x: satellite.x, y: satellite.y }];
   orbitHoldTime = 0;
@@ -256,6 +265,18 @@ function drawGrid(width, height) {
   ctx.restore();
 }
 
+function drawLaunchPad(cx, cy) {
+  if (phase !== "idle" && phase !== "dragging") return;
+  ctx.save();
+  ctx.strokeStyle = "rgba(77, 216, 232, 0.4)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2, 5]);
+  ctx.beginPath();
+  ctx.arc(cx, cy, LAUNCH_RADIUS, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function drawPlanet(cx, cy) {
   const glow = ctx.createRadialGradient(cx, cy, PLANET_RADIUS * 0.4, cx, cy, PLANET_RADIUS * 2.2);
   const rimColor = outcome === "crash" ? "255, 82, 82" : "77, 216, 232";
@@ -355,6 +376,7 @@ function render() {
   drawTrace(cx, cy);
   drawOrbitLockRing(cx, cy);
   drawPlanet(cx, cy);
+  drawLaunchPad(cx, cy);
   drawParticles(cx, cy);
   drawDragIndicator(cx, cy);
   drawSatellite(cx, cy);
@@ -363,8 +385,9 @@ function render() {
 
 function frame(timestamp) {
   if (lastFrameTime === null) lastFrameTime = timestamp;
-  const dt = Math.min(MAX_FRAME_DT, (timestamp - lastFrameTime) / 1000);
+  const rawDt = Math.min(MAX_FRAME_DT, (timestamp - lastFrameTime) / 1000);
   lastFrameTime = timestamp;
+  const dt = rawDt * TIME_SCALE;
 
   if (phase === "flying") {
     stepPhysics(dt);
