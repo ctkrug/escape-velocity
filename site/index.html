@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apogee — orbital mechanics simulator you play in one drag</title>
+  <meta
+    name="description"
+    content="Apogee is a gravity simulator browser game: drag to launch a satellite off a tiny planet and watch real two-body physics resolve to a crash, orbit, or escape. No install, no login."
+  />
+  <meta property="og:title" content="Apogee — orbital mechanics simulator you play in one drag" />
+  <meta
+    property="og:description"
+    content="A gravity simulator browser game with real two-body physics. Drag a satellite off a tiny planet and watch it crash, orbit, or escape."
+  />
+  <meta property="og:type" content="website" />
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a1628'/%3E%3Cellipse cx='16' cy='16' rx='13' ry='6' fill='none' stroke='%23ff6b4a' stroke-width='2' transform='rotate(-20 16 16)'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%234dd8e8'/%3E%3C/svg%3E"
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles/main.css" />
+  <style>
+    /* Below-the-fold copy: same tokens as the app, per docs/DESIGN.md. */
+    .about {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: var(--space-5) var(--space-4);
+      border-top: 1px dashed rgba(77, 216, 232, 0.2);
+    }
+    .about h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 1.3rem;
+      color: var(--text);
+      margin: 0 0 var(--space-3);
+    }
+    .about h3 {
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin: var(--space-4) 0 var(--space-1);
+    }
+    .about p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 68ch;
+      margin: 0 0 var(--space-2);
+    }
+    .about a {
+      color: var(--accent);
+    }
+    .about a.about-cta {
+      display: inline-block;
+      margin-top: var(--space-4);
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      color: var(--bg);
+      background: var(--accent);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-4);
+      text-decoration: none;
+      transition: background 160ms var(--ease-out);
+    }
+    .about a.about-cta:hover {
+      background: #6de3f0;
+    }
+    .site-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+    .footer-links {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <h1 class="wordmark">
+      AP<span class="wordmark-orbit-wrap"><span class="wordmark-planet">O</span><span class="wordmark-orbit-dot" aria-hidden="true"></span></span>GEE
+    </h1>
+    <p class="tagline">drag a satellite off a tiny planet: crash, orbit, or escape</p>
+  </header>
+  <main class="stage">
+    <div class="stage-canvas-wrap" id="canvas-wrap">
+      <canvas id="scene" aria-label="Orbital simulation canvas"></canvas>
+      <div class="outcome-overlay" id="outcome-overlay" hidden>
+        <div class="outcome-card">
+          <p class="outcome-title" id="outcome-title">CRASH</p>
+          <dl class="outcome-stats" id="outcome-stats"></dl>
+          <button type="button" class="btn btn-primary" id="launch-another">Launch Another</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-panel">
+      <dl class="hud-grid" id="hud-grid">
+        <div class="hud-item"><dt>velocity</dt><dd id="hud-velocity">—</dd></div>
+        <div class="hud-item"><dt>altitude</dt><dd id="hud-altitude">—</dd></div>
+        <div class="hud-item"><dt>apoapsis</dt><dd id="hud-apoapsis">—</dd></div>
+        <div class="hud-item"><dt>periapsis</dt><dd id="hud-periapsis">—</dd></div>
+        <div class="hud-item"><dt>period</dt><dd id="hud-period">—</dd></div>
+        <div class="hud-item"><dt>orbits locked</dt><dd id="hud-orbit-count">0</dd></div>
+      </dl>
+      <p id="hud-status" class="hud-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="controls">
+      <label class="control gravity-control" for="gravity-slider">
+        <span class="control-label">gravity&nbsp;(GM)</span>
+        <input type="range" id="gravity-slider" min="1500" max="7000" step="100" value="4000" />
+        <span class="control-value" id="gravity-value">4000</span>
+      </label>
+      <div class="control-buttons">
+        <button type="button" class="btn btn-icon" id="mute-toggle" aria-label="Mute sound" aria-pressed="false"></button>
+        <button type="button" class="btn" id="reset-button">Reset</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="about" aria-labelledby="about-heading">
+    <h2 id="about-heading">A gravity simulator browser game with real physics</h2>
+    <p>
+      Apogee is an orbital mechanics simulator that runs entirely in your browser. Rather than
+      reading about apoapsis, periapsis, and escape velocity, you feel them: drag a satellite off
+      a tiny planet, let go, and its path is computed live, frame by frame, from inverse-square
+      gravity. Nothing here is a pre-baked animation. Every launch is an actual physics outcome,
+      so the same drag can crash, orbit, or escape depending on exactly how hard and in which
+      direction you pull.
+    </p>
+    <p>
+      The integrator is semi-implicit (symplectic) Euler, which keeps orbital energy bounded over
+      long runs. That is why a stable orbit here really stays stable instead of slowly spiraling
+      in or out from rounding error, so you can watch a satellite loop for as long as you like.
+      A live HUD reports velocity, altitude, apoapsis, periapsis, and orbital period as the
+      satellite flies, and a gravity slider lets you retune the planet before the next launch.
+    </p>
+
+    <h3>Is this an online orbital mechanics simulator I can just open?</h3>
+    <p>
+      Yes. Apogee is a static web page, so it loads in any modern browser with no install, no
+      account, and no download. Open it and drag from the planet to launch.
+    </p>
+
+    <h3>Is it a gravity simulator or a game?</h3>
+    <p>
+      Both. The simulation is a genuine two-body gravity model, and the three possible outcomes
+      (crash, orbit, escape) turn it into a small game: aim for a clean orbit, or see how far
+      past escape velocity you can push a launch.
+    </p>
+
+    <h3>How do I get a satellite into a stable orbit?</h3>
+    <p>
+      Drag roughly sideways relative to the planet, not straight out, and use a medium pull. Too
+      little speed and the orbit dips into the surface for a crash; too much and it escapes. Hold
+      a stable loop for two full periods and the orbit locks, adding to your orbit count.
+    </p>
+
+    <h3>Does it work on a phone?</h3>
+    <p>
+      Yes. Touch drag-to-launch works the same as mouse, the layout reflows for small screens,
+      and reduced-motion preferences are respected.
+    </p>
+
+    <a class="about-cta" href="https://github.com/ctkrug/escape-velocity">View the source on GitHub</a>
+  </section>
+
+  <footer class="site-footer">
+    <p>real two-body gravity, simulated in your browser · no install, no accounts</p>
+    <p class="footer-links">
+      <a href="https://github.com/ctkrug/escape-velocity">View on GitHub</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://apps.charliekrug.com">More by Charlie Krug → apps.charliekrug.com</a>
+    </p>
+  </footer>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
