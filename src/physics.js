@@ -3,8 +3,13 @@
 // for a canvas at typical screen sizes rather than modeling real meters/kg.
 export const DEFAULT_GM = 4000;
 
+// Clamping r2 away from exactly zero keeps the inverse-square factor finite
+// at the singularity (x=y=0) instead of NaN — a NaN state can never satisfy
+// r <= planetRadius, so classifyOutcome would loop in "flying" forever.
+const MIN_R2 = 1e-6;
+
 export function acceleration(x, y, gm = DEFAULT_GM) {
-  const r2 = x * x + y * y;
+  const r2 = Math.max(x * x + y * y, MIN_R2);
   const r = Math.sqrt(r2);
   const factor = -gm / (r2 * r);
   return { ax: factor * x, ay: factor * y };
