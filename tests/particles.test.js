@@ -58,6 +58,12 @@ describe("updateParticles", () => {
     expect(next).toEqual([]);
   });
 
+  it("drops a particle whose life lands exactly on zero", () => {
+    const particles = [{ x: 0, y: 0, vx: 0, vy: 0, life: 0.5, maxLife: 1 }];
+    const next = updateParticles(particles, 0.5);
+    expect(next).toEqual([]);
+  });
+
   it("returns an empty array for an empty input", () => {
     expect(updateParticles([], 0.016)).toEqual([]);
   });
