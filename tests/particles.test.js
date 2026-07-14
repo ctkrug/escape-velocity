@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import fc from "fast-check";
 import { createDebrisBurst, updateParticles, particleOpacity } from "../src/particles.js";
 
 function fixedRandom(sequence) {
