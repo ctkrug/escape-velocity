@@ -33,8 +33,8 @@ describe("acceleration", () => {
   it("is always finite and pulls back toward the planet, for any position", () => {
     fc.assert(
       fc.property(
-        fc.float({ min: -1e4, max: 1e4, noNaN: true }),
-        fc.float({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
         (x, y) => {
           const a = acceleration(x, y);
           expect(Number.isFinite(a.ax)).toBe(true);
@@ -161,5 +161,32 @@ describe("orbitalElements", () => {
     const elements = orbitalElements({ x: r, y: 0, vx: 0, vy: vNearEscape });
     expect(elements).not.toBeNull();
     expect(elements.eccentricity).toBeLessThan(1);
+  });
+
+  it("always orders periapsis <= semiMajorAxis <= apoapsis for any bound orbit", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 10, max: 2000, noNaN: true }),
+        fc.double({ min: 0, max: 2 * Math.PI, noNaN: true }),
+        fc.double({ min: 0, max: 0.99, noNaN: true }),
+        fc.double({ min: 0, max: 2 * Math.PI, noNaN: true }),
+        (r, posAngle, speedFraction, velAngle) => {
+          const x = r * Math.cos(posAngle);
+          const y = r * Math.sin(posAngle);
+          const speed = speedFraction * escapeVelocity(r);
+          const vx = speed * Math.cos(velAngle);
+          const vy = speed * Math.sin(velAngle);
+
+          const elements = orbitalElements({ x, y, vx, vy });
+          expect(elements).not.toBeNull();
+          expect(elements.periapsis).toBeLessThanOrEqual(elements.semiMajorAxis + 1e-6);
+          expect(elements.semiMajorAxis).toBeLessThanOrEqual(elements.apoapsis + 1e-6);
+          // e === 1 is the degenerate zero-angular-momentum case (a purely
+          // radial fall, periapsis 0); genuine ellipses have e < 1.
+          expect(elements.eccentricity).toBeGreaterThanOrEqual(0);
+          expect(elements.eccentricity).toBeLessThanOrEqual(1);
+        }
+      )
+    );
   });
 });
