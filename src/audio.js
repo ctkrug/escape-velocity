@@ -2,15 +2,12 @@ import { getBoolean, setBoolean } from "./storage.js";
 
 const MUTE_KEY = "escape-velocity:muted";
 
-function tone(audioCtx, { freq, duration, type = "sine", gain = 0.05, sweepTo = null, startOffset = 0 }) {
+function tone(audioCtx, { freq, duration, type = "sine", gain = 0.05, startOffset = 0 }) {
   const start = audioCtx.currentTime + startOffset;
   const osc = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   osc.type = type;
   osc.frequency.setValueAtTime(freq, start);
-  if (sweepTo !== null) {
-    osc.frequency.linearRampToValueAtTime(sweepTo, start + duration);
-  }
   g.gain.setValueAtTime(gain, start);
   g.gain.exponentialRampToValueAtTime(0.0001, start + duration);
   osc.connect(g).connect(audioCtx.destination);
