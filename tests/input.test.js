@@ -39,6 +39,24 @@ describe("clampToMaxDistance", () => {
     const result = clampToMaxDistance({ x: 0, y: 0 }, { x: 6, y: 8 }, 10);
     expect(result).toEqual({ x: 6, y: 8 });
   });
+
+  it("never returns a point farther than maxDistance from the anchor", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: -1e4, max: 1e4, noNaN: true }),
+        fc.double({ min: 0.01, max: 1e4, noNaN: true }),
+        (ax, ay, px, py, maxDistance) => {
+          const anchor = { x: ax, y: ay };
+          const pointer = { x: px, y: py };
+          const result = clampToMaxDistance(anchor, pointer, maxDistance);
+          expect(dragDistance(anchor, result)).toBeLessThanOrEqual(maxDistance + 1e-6);
+        }
+      )
+    );
+  });
 });
 
 describe("launchVelocity", () => {
