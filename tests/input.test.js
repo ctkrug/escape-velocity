@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import fc from "fast-check";
 import { dragVector, dragDistance, clampToMaxDistance, launchVelocity } from "../src/input.js";
 
 describe("dragVector / dragDistance", () => {
