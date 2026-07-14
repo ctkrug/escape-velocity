@@ -98,6 +98,10 @@ crash, a stable orbit, or an escape.
   - The GitHub Actions workflow runs `npm test` on every push and pull request to `main` and
     fails the build on any red test (already wired — verify it stays green as stories land).
 
-- [ ] **4.3 Cross-browser smoke check**
+- [x] **4.3 Cross-browser smoke check**
   - QA notes confirm drag-launch works via mouse in at least two desktop browsers and via touch
     emulation in devtools, with any browser-specific issues documented and fixed or filed.
+  - Verified: mouse drag-to-launch (crash + escape outcomes) in both Chromium and Firefox
+    (headless, automated), and touch drag-to-launch (`touchstart`/`touchmove`/`touchend`) under
+    Chromium's touch emulation — identical rendering and behavior, no console errors in either
+    engine. Not yet exercised in WebKit/Safari; no issues found in the two engines tested.
