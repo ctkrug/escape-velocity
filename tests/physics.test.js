@@ -5,6 +5,8 @@ import {
   stepSimulation,
   specificOrbitalEnergy,
   classifyOutcome,
+  orbitalElements,
+  escapeVelocity,
 } from "../src/physics.js";
 
 describe("acceleration", () => {
@@ -80,5 +82,38 @@ describe("classifyOutcome", () => {
     const state = { x: r, y: 0, vx: 0, vy: vEsc };
     const outcome = runUntil(state, 0.02, 20000, (o) => o === "escape");
     expect(outcome).toBe("escape");
+  });
+});
+
+describe("orbitalElements", () => {
+  it("reports apoapsis equal to periapsis for a circular orbit", () => {
+    const r = 300;
+    const v = circularOrbitVelocity(r);
+    const elements = orbitalElements({ x: r, y: 0, vx: 0, vy: v });
+    expect(elements.apoapsis).toBeCloseTo(r, 5);
+    expect(elements.periapsis).toBeCloseTo(r, 5);
+    expect(elements.eccentricity).toBeCloseTo(0, 5);
+  });
+
+  it("gives a period matching Kepler's third law for a circular orbit", () => {
+    const r = 300;
+    const v = circularOrbitVelocity(r);
+    const elements = orbitalElements({ x: r, y: 0, vx: 0, vy: v });
+    const expectedPeriod = (2 * Math.PI * r) / v;
+    expect(elements.period).toBeCloseTo(expectedPeriod, 3);
+  });
+
+  it("returns null for a hyperbolic (escaping) trajectory", () => {
+    const r = 300;
+    const vEsc = circularOrbitVelocity(r) * 2;
+    expect(orbitalElements({ x: r, y: 0, vx: 0, vy: vEsc })).toBeNull();
+  });
+
+  it("stays bound (non-null) for a velocity just under escape velocity", () => {
+    const r = 300;
+    const vNearEscape = escapeVelocity(r) * 0.999;
+    const elements = orbitalElements({ x: r, y: 0, vx: 0, vy: vNearEscape });
+    expect(elements).not.toBeNull();
+    expect(elements.eccentricity).toBeLessThan(1);
   });
 });
