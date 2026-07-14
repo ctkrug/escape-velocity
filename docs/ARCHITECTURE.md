@@ -67,7 +67,13 @@ particles → drag indicator → satellite → HUD text update. The canvas backi
 
 Beyond the Vitest suite (`npm test` — physics/input/hud/particles/stats/audio/storage, all
 DOM-free, 100% line / ~95% branch coverage on those modules per `npm run test:coverage`), the
-built page has been driven end-to-end in headless Chromium, Firefox, and WebKit (mouse **and**
+math-heavy modules (`physics.js`, `input.js`, `hud.js`, `particles.js`, `stats.js`) also carry
+[fast-check](https://github.com/dubzzz/fast-check) property tests asserting invariants across
+randomized inputs (acceleration always finite/attractive, orbital elements always ordered
+periapsis ≤ semiMajorAxis ≤ apoapsis, `stepSimulation` never produces NaN, `clampToMaxDistance`
+never exceeds its cap, the HUD never renders a raw NaN/Infinity, orbit count is always a
+non-negative integer) rather than only the hand-picked example cases above them. The built page
+has been driven end-to-end in headless Chromium, Firefox, and WebKit (mouse **and**
 touch drag-to-launch, all three outcomes, HUD live updates, mute-state + orbit-count persistence
 across reload — including hand-corrupted/malformed localStorage values, which fall back cleanly
 — `prefers-reduced-motion` suppressing shake/particles while outcomes still resolve, gravity
