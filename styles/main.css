@@ -37,3 +37,74 @@ body {
   color: var(--text);
   font-family: var(--font-ui);
 }
+
+body {
+  background-image: linear-gradient(rgba(77, 216, 232, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 216, 232, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 50% 20%, rgba(77, 216, 232, 0.08), transparent 60%);
+  background-size: 32px 32px, 32px 32px, 100% 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.masthead {
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  text-align: center;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  margin: 0;
+  color: var(--text);
+}
+
+.wordmark-accent {
+  color: var(--accent);
+  text-shadow: var(--glow);
+}
+
+.tagline {
+  color: var(--text-muted);
+  margin: var(--space-1) 0 0;
+  font-size: 0.95rem;
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+#scene {
+  width: min(100%, 900px);
+  height: 60vh;
+  min-height: 360px;
+  background: var(--surface-1);
+  border: 1px dashed rgba(77, 216, 232, 0.35);
+  border-radius: var(--radius);
+  box-shadow: var(--glow);
+}
+
+.hud-readout {
+  font-family: var(--font-ui);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  min-height: 1.2em;
+}
+
+.site-footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: var(--space-3);
+  border-top: 1px dashed rgba(77, 216, 232, 0.2);
+}
