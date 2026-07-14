@@ -33,6 +33,23 @@ export function specificOrbitalEnergy(state, gm = DEFAULT_GM) {
   return v2 / 2 - gm / r;
 }
 
+// Orbital elements for a bound (elliptical) trajectory, derived from the
+// same specific energy + angular momentum used by classifyOutcome. Returns
+// null for a hyperbolic/parabolic trajectory (energy >= 0), where apoapsis
+// and orbital period aren't meaningful.
+export function orbitalElements(state, gm = DEFAULT_GM) {
+  const energy = specificOrbitalEnergy(state, gm);
+  if (energy >= 0) return null;
+
+  const h = state.x * state.vy - state.y * state.vx;
+  const a = -gm / (2 * energy);
+  const e = Math.sqrt(Math.max(0, 1 + (2 * energy * h * h) / (gm * gm)));
+  const periapsis = a * (1 - e);
+  const apoapsis = a * (1 + e);
+  const period = 2 * Math.PI * Math.sqrt((a * a * a) / gm);
+  return { semiMajorAxis: a, eccentricity: e, periapsis, apoapsis, period };
+}
+
 // Classifies where a trajectory is headed: "crash" once it has already hit
 // the planet, "orbit" once its ellipse clears the planet at periapsis,
 // "escape" once a positive-energy trajectory has cleared escapeRadius, and
