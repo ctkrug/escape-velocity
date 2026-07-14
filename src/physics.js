@@ -32,3 +32,24 @@ export function specificOrbitalEnergy(state, gm = DEFAULT_GM) {
   const v2 = state.vx * state.vx + state.vy * state.vy;
   return v2 / 2 - gm / r;
 }
+
+// Classifies where a trajectory is headed: "crash" once it has already hit
+// the planet, "orbit" once its ellipse clears the planet at periapsis,
+// "escape" once a positive-energy trajectory has cleared escapeRadius, and
+// "flying" while still resolving (elliptical but will crash on a future
+// pass, or hyperbolic but still inside escapeRadius).
+export function classifyOutcome(state, planetRadius, escapeRadius, gm = DEFAULT_GM) {
+  const r = Math.hypot(state.x, state.y);
+  if (r <= planetRadius) return "crash";
+
+  const energy = specificOrbitalEnergy(state, gm);
+  if (energy >= 0) {
+    return r >= escapeRadius ? "escape" : "flying";
+  }
+
+  const h = state.x * state.vy - state.y * state.vx;
+  const a = -gm / (2 * energy);
+  const e = Math.sqrt(Math.max(0, 1 + (2 * energy * h * h) / (gm * gm)));
+  const periapsis = a * (1 - e);
+  return periapsis <= planetRadius ? "flying" : "orbit";
+}
