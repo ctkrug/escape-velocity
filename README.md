@@ -39,8 +39,9 @@ files. [Vitest](https://vitest.dev) covers the physics engine with unit tests.
 
 ```bash
 npm install
-npm test   # run the full unit test suite (physics, input, hud, particles, stats, audio)
-npm run dev  # serve the static site locally
+npm test                # run the full unit test suite (physics, input, hud, particles, stats, audio, storage)
+npm run test:coverage   # same, with a v8 coverage report
+npm run dev             # serve the static site locally
 ```
 
 Then open the served URL. The whole app is `index.html` + `src/` + `styles/`, no build step.
