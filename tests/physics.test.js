@@ -128,6 +128,15 @@ describe("orbitalElements", () => {
     expect(orbitalElements({ x: r, y: 0, vx: 0, vy: vEsc })).toBeNull();
   });
 
+  it("returns null for an exactly zero specific orbital energy (parabolic)", () => {
+    // gm=2, r=1, v=2 gives energy = v²/2 - gm/r = 2 - 2 = 0 exactly in
+    // floating point, sidestepping the rounding noise sqrt-based escape
+    // velocity would introduce at this boundary.
+    const state = { x: 1, y: 0, vx: 0, vy: 2 };
+    expect(specificOrbitalEnergy(state, 2)).toBe(0);
+    expect(orbitalElements(state, 2)).toBeNull();
+  });
+
   it("stays bound (non-null) for a velocity just under escape velocity", () => {
     const r = 300;
     const vNearEscape = escapeVelocity(r) * 0.999;
