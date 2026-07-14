@@ -77,6 +77,11 @@ describe("classifyOutcome", () => {
     return outcome;
   }
 
+  it("classifies exactly touching the planet radius as a crash", () => {
+    const state = { x: planetRadius, y: 0, vx: 0, vy: 0 };
+    expect(classifyOutcome(state, planetRadius, escapeRadius)).toBe("crash");
+  });
+
   it("classifies a slow drop as a crash", () => {
     const state = { x: 100, y: 0, vx: 0, vy: 0.5 };
     const outcome = runUntil(state, 0.02, 5000, (o) => o === "crash");
