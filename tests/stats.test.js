@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import fc from "fast-check";
 import { getOrbitCount, incrementOrbitCount } from "../src/stats.js";
 
 function fakeStorage(initial = {}) {
