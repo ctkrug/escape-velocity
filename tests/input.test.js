@@ -73,4 +73,24 @@ describe("launchVelocity", () => {
   it("is zero velocity for zero drag distance", () => {
     expect(launchVelocity({ x: 5, y: 5 }, { x: 5, y: 5 }, 2)).toEqual({ vx: 0, vy: 0 });
   });
+
+  it("scales linearly with sensitivity for any anchor/pointer pair", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+        fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+        fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+        fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+        fc.double({ min: 0, max: 10, noNaN: true }),
+        (ax, ay, px, py, sensitivity) => {
+          const anchor = { x: ax, y: ay };
+          const pointer = { x: px, y: py };
+          const v1 = launchVelocity(anchor, pointer, sensitivity);
+          const v2 = launchVelocity(anchor, pointer, sensitivity * 2);
+          expect(v2.vx).toBeCloseTo(v1.vx * 2, 6);
+          expect(v2.vy).toBeCloseTo(v1.vy * 2, 6);
+        }
+      )
+    );
+  });
 });
