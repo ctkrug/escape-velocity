@@ -68,6 +68,29 @@ describe("updateParticles", () => {
   it("returns an empty array for an empty input", () => {
     expect(updateParticles([], 0.016)).toEqual([]);
   });
+
+  it("never grows the particle count and always outputs finite fields", () => {
+    const particleArb = fc.record({
+      x: fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+      y: fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+      vx: fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+      vy: fc.double({ min: -1e3, max: 1e3, noNaN: true }),
+      life: fc.double({ min: 0, max: 5, noNaN: true }),
+      maxLife: fc.double({ min: 0, max: 5, noNaN: true }),
+    });
+    fc.assert(
+      fc.property(fc.array(particleArb, { maxLength: 50 }), fc.double({ min: 0, max: 1, noNaN: true }), (particles, dt) => {
+        const next = updateParticles(particles, dt);
+        expect(next.length).toBeLessThanOrEqual(particles.length);
+        for (const p of next) {
+          expect(Number.isFinite(p.x)).toBe(true);
+          expect(Number.isFinite(p.y)).toBe(true);
+          expect(Number.isFinite(p.life)).toBe(true);
+          expect(p.life).toBeGreaterThan(0);
+        }
+      })
+    );
+  });
 });
 
 describe("particleOpacity", () => {
