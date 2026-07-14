@@ -62,13 +62,14 @@ body {
   color: var(--text);
 }
 
+/* The "O" of AP-O-GEE is the planet; a satellite dot orbits it — the app's
+   own mechanic, live in the wordmark. */
 .wordmark-orbit-wrap {
   position: relative;
   display: inline-block;
-  width: 1ch;
 }
 
-.wordmark-accent {
+.wordmark-planet {
   color: var(--accent);
   text-shadow: var(--glow);
 }
@@ -79,20 +80,19 @@ body {
   left: 50%;
   width: 5px;
   height: 5px;
-  margin-top: -2.5px;
+  margin: -2.5px 0 0 -2.5px;
   border-radius: 50%;
   background: var(--accent-support);
   box-shadow: 0 0 8px 1px rgba(255, 107, 74, 0.7);
-  transform-origin: -1px center;
   animation: wordmark-orbit 3.4s linear infinite;
 }
 
 @keyframes wordmark-orbit {
   from {
-    transform: rotate(0deg) translateX(1.1em) rotate(0deg);
+    transform: rotate(0deg) translateX(0.62em) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(1.1em) rotate(-360deg);
+    transform: rotate(360deg) translateX(0.62em) rotate(-360deg);
   }
 }
 

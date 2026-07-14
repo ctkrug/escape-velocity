@@ -1,8 +1,8 @@
-# Design — Escape Velocity
+# Design — Apogee
 
 ## Aesthetic direction
 
-**Blueprint/technical.** Escape Velocity is a blueprint/technical HUD: a cyan-on-navy schematic
+**Blueprint/technical.** Apogee is a blueprint/technical HUD: a cyan-on-navy schematic
 grid, dashed trajectory traces, and mission-control readouts — like flight-planning software for
 a tiny world, not a cartoon space game. This fits the "real physics, not a canned animation"
 premise directly: the page should look like an instrument, not a toy box.
@@ -44,9 +44,10 @@ floating in empty space.
 
 ## Signature detail
 
-The wordmark's center dot (`ESCAPE·VELOCITY`) glows and, once interaction lands in BUILD, gets a
-tiny dot that orbits it continuously — a live miniature of the app's own mechanic, reinforcing
-the brand every time someone looks at the header.
+The "O" of the `APOGEE` wordmark is the planet: it glows in the cyan accent and a tiny orange
+satellite dot orbits it continuously — a live miniature of the app's own mechanic, reinforcing
+the brand every time someone looks at the header. (Held static under
+`prefers-reduced-motion` rather than removed.)
 
 ## The juice plan (games/toys)
 
