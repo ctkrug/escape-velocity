@@ -22,6 +22,12 @@ describe("acceleration", () => {
     const b = acceleration(150, 0);
     expect(Math.hypot(a.ax, a.ay)).toBeCloseTo(Math.hypot(b.ax, b.ay), 10);
   });
+
+  it("stays finite at the origin instead of producing NaN", () => {
+    const a = acceleration(0, 0);
+    expect(Number.isFinite(a.ax)).toBe(true);
+    expect(Number.isFinite(a.ay)).toBe(true);
+  });
 });
 
 describe("circularOrbitVelocity", () => {
@@ -44,6 +50,14 @@ describe("stepSimulation", () => {
 
     const endEnergy = specificOrbitalEnergy(state);
     expect(Math.abs(endEnergy - startEnergy) / Math.abs(startEnergy)).toBeLessThan(0.02);
+  });
+
+  it("never produces NaN state, even starting exactly at the singularity", () => {
+    const state = stepSimulation({ x: 0, y: 0, vx: 0, vy: 0 }, 0.01);
+    expect(Number.isFinite(state.x)).toBe(true);
+    expect(Number.isFinite(state.y)).toBe(true);
+    expect(Number.isFinite(state.vx)).toBe(true);
+    expect(Number.isFinite(state.vy)).toBe(true);
   });
 });
 
