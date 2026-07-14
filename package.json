@@ -1,6 +1,6 @@
 {
   "name": "escape-velocity",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Drag to launch a satellite from a tiny planet with real two-body gravity.",
   "type": "module",

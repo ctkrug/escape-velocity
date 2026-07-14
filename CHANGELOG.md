@@ -3,7 +3,26 @@
 All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.0.0] - 2026-07-14
+
+### Added
+
+- Landing build under `site/`: the app plus a visible GitHub link, Open Graph tags, and a
+  below-the-fold section with search-intent copy and an FAQ.
+- `docs/launch/devto.md` build article and property-based tests (fast-check) across the
+  physics, input, HUD, particle, and stats modules.
+
+### Changed
+
+- Renamed the product to **Apogee** (the repo slug is unchanged). The wordmark's "O" is now the
+  planet, with a satellite dot orbiting it.
+
+### Fixed
+
+- Clamped the inverse-square term away from the `r = 0` singularity so the integrator can no
+  longer produce a `NaN` state that stalls outcome classification.
+
+## [0.1.0]
 
 ### Added
 
