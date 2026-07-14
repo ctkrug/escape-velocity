@@ -18,3 +18,17 @@ export function stepSimulation(state, dt, gm = DEFAULT_GM) {
   const y = state.y + vy * dt;
   return { x, y, vx, vy };
 }
+
+export function circularOrbitVelocity(r, gm = DEFAULT_GM) {
+  return Math.sqrt(gm / r);
+}
+
+export function escapeVelocity(r, gm = DEFAULT_GM) {
+  return Math.sqrt((2 * gm) / r);
+}
+
+export function specificOrbitalEnergy(state, gm = DEFAULT_GM) {
+  const r = Math.hypot(state.x, state.y);
+  const v2 = state.vx * state.vx + state.vy * state.vy;
+  return v2 / 2 - gm / r;
+}
