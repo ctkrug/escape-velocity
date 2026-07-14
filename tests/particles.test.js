@@ -28,6 +28,18 @@ describe("createDebrisBurst", () => {
       expect(Math.hypot(p.vx, p.vy)).toBeGreaterThan(0);
     }
   });
+
+  it("falls back to a seeded PRNG when no random source is injected", () => {
+    const particles = createDebrisBurst(10, 20, 6);
+    expect(particles).toHaveLength(6);
+    for (const p of particles) {
+      expect(p.x).toBe(10);
+      expect(p.y).toBe(20);
+      expect(Number.isFinite(p.vx)).toBe(true);
+      expect(Number.isFinite(p.vy)).toBe(true);
+      expect(p.life).toBeGreaterThan(0);
+    }
+  });
 });
 
 describe("updateParticles", () => {
