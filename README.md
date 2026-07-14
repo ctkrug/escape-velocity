@@ -19,13 +19,15 @@ You click-drag from the planet and let go. The satellite either:
 - **orbits** — it snaps into a stable, glowing loop that keeps going, or
 - **escapes** — pull hard enough and it breaks free past escape velocity and flies off screen.
 
-## Planned features
+## Features
 
 - Real two-body gravitational simulation, semi-implicit Euler integration
-- Drag-to-launch with mouse and touch support
-- Live HUD: velocity, altitude, apoapsis/periapsis, orbital period
-- Synthesized WebAudio SFX for launch, crash, and orbit-lock — no audio files
-- Adjustable gravity strength / planet mass
+- Drag-to-launch with mouse and touch support, live drag indicator
+- Live HUD: velocity, altitude, apoapsis/periapsis, orbital period, lifetime orbit count
+- Synthesized WebAudio SFX for drag-charge, launch, crash, orbit-lock, and UI clicks — no
+  audio files — behind a mute toggle that persists across reloads
+- Adjustable gravity strength (locked mid-flight so it never rewrites a trajectory in progress)
+- Reduced-motion and keyboard-accessible throughout
 - Fully responsive, zero-install, static site — nothing to build or deploy but HTML/CSS/JS
 
 ## Stack
@@ -37,7 +39,7 @@ files. [Vitest](https://vitest.dev) covers the physics engine with unit tests.
 
 ```bash
 npm install
-npm test   # run the physics engine test suite
+npm test   # run the full unit test suite (physics, input, hud, particles, stats, audio)
 npm run dev  # serve the static site locally
 ```
 
@@ -48,6 +50,7 @@ Then open the served URL. The whole app is `index.html` + `src/` + `styles/`, no
 - [`docs/VISION.md`](docs/VISION.md) — problem, audience, core idea, what "done" looks like
 - [`docs/BACKLOG.md`](docs/BACKLOG.md) — epic/story breakdown with acceptance criteria
 - [`docs/DESIGN.md`](docs/DESIGN.md) — visual direction, tokens, and the juice plan
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — module map, data flow, how to run/test
 
 ## License
 
