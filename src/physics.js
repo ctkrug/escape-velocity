@@ -9,3 +9,12 @@ export function acceleration(x, y, gm = DEFAULT_GM) {
   const factor = -gm / (r2 * r);
   return { ax: factor * x, ay: factor * y };
 }
+
+export function stepSimulation(state, dt, gm = DEFAULT_GM) {
+  const { ax, ay } = acceleration(state.x, state.y, gm);
+  const vx = state.vx + ax * dt;
+  const vy = state.vy + ay * dt;
+  const x = state.x + vx * dt;
+  const y = state.y + vy * dt;
+  return { x, y, vx, vy };
+}
