@@ -98,7 +98,7 @@ function toCanvasLocal(clientX, clientY) {
 
 function setPhase(next) {
   phase = next;
-  gravitySlider.disabled = phase === "flying" || phase === "resolved" ? true : false;
+  gravitySlider.disabled = phase === "flying" || phase === "resolved";
 }
 
 function resetScene() {
@@ -114,7 +114,7 @@ function resetScene() {
   hudStatus.textContent = "";
   delete hudStatus.dataset.outcome;
   setPhase("idle");
-  render(0);
+  render();
 }
 
 function beginDrag(clientX, clientY) {
